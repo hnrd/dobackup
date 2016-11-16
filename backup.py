@@ -59,3 +59,8 @@ scheduler.add_job(
     days=1,
     args=(args.socket, args.outdir, args.stack, args.services),
 )
+    try:
+        while True:
+            time.sleep(20)
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
