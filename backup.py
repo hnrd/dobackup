@@ -1,5 +1,6 @@
 import argparse
 import subprocess
+import time
 from datetime import datetime
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -43,6 +44,8 @@ def backup(socket, outdir, stack, services):
                 ])
 
 parser = argparse.ArgumentParser(description="backup a rancher services docker volumes")
+parser.add_argument('--loop', action='store_true',
+                    help="loop forever, run backup daily")
 parser.add_argument('socket', default='unix://var/run/docker.sock',
                     help="docker socket")
 parser.add_argument('outdir')
@@ -59,8 +62,9 @@ scheduler.add_job(
     days=1,
     args=(args.socket, args.outdir, args.stack, args.services),
 )
-try:
-    while True:
-        time.sleep(20)
-except (KeyboardInterrupt, SystemExit):
-    scheduler.shutdown()
+if 'loop' in args and args.loop:
+    try:
+        while True:
+            time.sleep(20)
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
